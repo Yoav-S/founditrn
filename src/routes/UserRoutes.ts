@@ -20,6 +20,23 @@ router.get('users/:id', async (req: Request, res: Response) => {
 // Route to get all users
 
 router.get('/', async (req: Request, res: Response) => {
+  const newUser: IUser = new User({
+    name: 'John Doe',
+    password: 'password123',
+    email: 'john@example.com',
+    phone: '1234567890',
+    items: [],
+    img: null,
+  });
+  
+  // Save the new user to the database
+  newUser.save()
+    .then((savedUser) => {
+      console.log('User saved:', savedUser);
+    })
+    .catch((error) => {
+      console.error('Error saving user:', error);
+    });
   console.log('user');
   try {
     const users: IUser[] = await User.find().populate('items');

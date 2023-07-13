@@ -2,7 +2,7 @@ import mongoose,{ Document, Schema, ConnectOptions } from 'mongoose';
 import { IItem } from './ItemModel';
 
 
-const mongoURI = 'mongodb://127.0.0.1:27017/founditpracticedb';
+const mongoURI = 'mongodb+srv://yoavsh444:yoavyoav1@cluster0.xonnk2r.mongodb.net/';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI)
