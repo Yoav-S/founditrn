@@ -1,20 +1,5 @@
-import mongoose,{ Document, Schema, ConnectOptions } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 import { IItem } from './ItemModel';
-
-
-const mongoURI = 'mongodb+srv://yoavsh444:yoavyoav1@cluster0.xonnk2r.mongodb.net/';
-
-// Connect to MongoDB
-mongoose.connect(mongoURI)
-  .then(() => {
-    console.log('MongoDB connected');
-    // Start your server or perform other operations
-  })
-  .catch((error) => {
-    console.error('MongoDB connection error:', error);
-    // Handle the connection error
-  });
-
 
 export interface IUser extends Document {
   name: string;
@@ -42,16 +27,17 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
   },
-  items: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'items',
-    },
-  ],
-  img: String,
+  items: {
+    type: [Schema.Types.ObjectId],
+    ref: 'Item',
+    default: [],
+  },
+  img: {
+    type: String,
+    default: undefined,
+  },
 });
 
 const User = mongoose.model<IUser>('User', userSchema);
 
 export default User;
- 
