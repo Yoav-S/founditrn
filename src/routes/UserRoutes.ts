@@ -3,22 +3,6 @@ import User, { IUser } from '../models/UserModel';
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
-// Route to get a user by ID
-router.get('users/:id', async (req: Request, res: Response) => {
-// const { id } = req.params;
-// try {
-//   const user: IUser | null = await User.findById(id);
-//   if (!user) {
-//     return res.status(404).json({ error: 'User not found' });
-//   }
-//   return res.json(user);
-// } catch (error) {
-//   return res.status(500).json({ error: 'Server error' });
-// }
-});
-
-// Route to get all users
-
 router.get('/', async (req: Request, res: Response) => {
   try {
     const users: IUser[] = await User.find()
@@ -33,20 +17,16 @@ router.post('/signup', async (req: Request, res: Response) => {
   const { name, email, password, phone } = req.body;
 
   try {
-    // Check if the email already exists
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({ error: 'Email already exists' });
     }
 
-    // Generate a salt
     const salt = await bcrypt.genSalt(10);
     
-    // Hash the password using the salt
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new user instance with the hashed password and empty items array
     const user: IUser = new User({
       name,
       email,
@@ -56,7 +36,6 @@ router.post('/signup', async (req: Request, res: Response) => {
       img: null
     });
 
-    // Save the user to the database
     const savedUser = await user.save();
 
     res.status(200).json({ message: 'Signup successful', user: savedUser });
@@ -67,27 +46,19 @@ router.post('/signup', async (req: Request, res: Response) => {
 });
 
 
-
-router.post('/login', async (req, res) => {
+router.post('/login', async (req : Request, res : Response) => {
   const { email, password } = req.body;
-
   try {
-    // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-
-    // Compare the provided password with the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-
-    // Password is valid, perform further actions (e.g., generate a token)
-
     res.status(200).json({ message: 'Login successful' });
   } catch (error) {
     console.error(error);
