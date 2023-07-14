@@ -1,5 +1,11 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import { IItem } from './ItemModel';
+const mongoUri = "mongodb+srv://yoavsh444:yoavyoav1@cluster0.xonnk2r.mongodb.net/founditDB"
+
+mongoose 
+ .connect(mongoUri)   
+ .then(() => console.log("Database connected!"))
+ .catch(err => console.log(err));
 
 export interface IUser extends Document {
   name: string;

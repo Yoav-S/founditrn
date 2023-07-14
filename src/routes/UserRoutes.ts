@@ -31,14 +31,13 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.post('/signup', async (req: Request, res: Response) => {
   const { name, email, password, phone } = req.body;
-
+ 
   try {
     // Generate a salt
     const salt = await bcrypt.genSalt(10);
-
+    
     // Hash the password using the salt
     const hashedPassword = await bcrypt.hash(password, salt);
-
     // Create a new user instance with the hashed password and empty items array
     const user: IUser = new User({
       name,
@@ -46,10 +45,12 @@ router.post('/signup', async (req: Request, res: Response) => {
       password: hashedPassword,
       phone,
       items: [],
+      img: null
     });
 
     // Save the user to the database
     const savedUser = await user.save();
+    console.log('user', user)
 
     res.status(200).json({ message: 'Signup successful', user: savedUser });
   } catch (error) {
