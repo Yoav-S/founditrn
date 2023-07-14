@@ -31,13 +31,21 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.post('/signup', async (req: Request, res: Response) => {
   const { name, email, password, phone } = req.body;
- 
+
   try {
+    // Check if the email already exists
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+
     // Generate a salt
     const salt = await bcrypt.genSalt(10);
     
     // Hash the password using the salt
     const hashedPassword = await bcrypt.hash(password, salt);
+
     // Create a new user instance with the hashed password and empty items array
     const user: IUser = new User({
       name,
@@ -50,7 +58,6 @@ router.post('/signup', async (req: Request, res: Response) => {
 
     // Save the user to the database
     const savedUser = await user.save();
-    console.log('user', user)
 
     res.status(200).json({ message: 'Signup successful', user: savedUser });
   } catch (error) {
@@ -58,6 +65,7 @@ router.post('/signup', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 
 router.post('/login', async (req, res) => {
