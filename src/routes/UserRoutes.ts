@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express';
 import User, { IUser } from '../models/UserModel';
-import { log } from 'console';
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
@@ -48,11 +47,13 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 
 router.post('/login', async (req: Request, res: Response) => {
-  const { email } = req.body.email;
-  const { password } = req.body.password;
+  const { email, password } = req.body;
+  console.log(typeof req.body);
+  
   try {
     const user = await User.findOne({ email });
-
+    console.log(user);
+    
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
