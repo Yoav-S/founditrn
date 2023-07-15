@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import User, { IUser } from '../models/UserModel';
+import { log } from 'console';
 const bcrypt = require('bcrypt');
 const router = express.Router();
 
@@ -55,7 +56,8 @@ router.post('/login', async (req : Request, res : Response) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    console.log(isPasswordValid);
+    
     if (!isPasswordValid) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
