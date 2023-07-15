@@ -48,7 +48,8 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 
 router.post('/login', async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email } = req.body.email;
+  const { password } = req.body.password;
   try {
     const user = await User.findOne({ email });
 
@@ -56,13 +57,13 @@ router.post('/login', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log(isPasswordValid.toString());
+    console.log(isPasswordValid);
     
-    if (isPasswordValid.toString() === 'false') {
-      return res.status(400).json({ isPasswordValid });
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'Invalid email or password' });
     }
     
-    return res.status(200).json({ message: 'Login successful' });
+    res.status(200).json({ message: 'Login successful' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
