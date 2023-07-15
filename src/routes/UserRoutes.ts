@@ -59,7 +59,7 @@ router.post('/login', async (req: Request, res: Response) => {
     console.log(isPasswordValid);
     
     if (!isPasswordValid) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+      return res.status(400).json({ isPasswordValid });
     }
     
     return res.status(200).json({ message: 'Login successful' });
