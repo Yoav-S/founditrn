@@ -48,15 +48,14 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 
 router.post('/login', async (req: Request, res: Response) => {
-  const { email } = req.body.email;
-  const { password } = req.body.password;
+  const {detailsobjs} = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne( detailsobjs.email );
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(detailsobjs.password, user.password);
     console.log(isPasswordValid);
     
     if (!isPasswordValid) {
