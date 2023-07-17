@@ -29,15 +29,18 @@ router.post('/insertItem', (req, res) => {
     images: imagesValue,
   });
   
+  console.log('arrived 32');
   
   // Save the new item to the database
   newItem.save()
     .then((savedItem) => {
+      console.log('saved');
+      
       // Populate the ownerId with the User document
       return User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
     })
     .then(() => {
-      res.status(200).json({ message: 'Item inserted successfully' });
+      res.status(200).json(newItem);
     })
     .catch((error) => {
       console.error(error);
