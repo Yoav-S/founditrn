@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
   });
 
 // Route to create a new item
-router.post('/insertItem', (req, res) => {
+router.post('/insertItem', (req : Request, res : Response) => {
   const { category, date, place, description, ownerId, images } = req.body;
   console.log(category);
   // Ensure the types of the extracted parameters
