@@ -40,7 +40,7 @@ router.post('/insertItem', (req : Request, res : Response) => {
       return User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
     })
     .then(() => {
-      res.status(200).json(newItem);
+      res.status(200).json({message: 'Item Uploaded Successfully !'});
     })
     .catch((error) => {
       console.error(error);
