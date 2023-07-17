@@ -11,7 +11,7 @@ router.get('/', (req, res) => {
 // Route to create a new item
 router.post('/insertItem', (req : Request, res : Response) => {
   const { category, date, place, description, ownerId, images } = req.body;
-  console.log(category);
+  console.log(ownerId);
   // Ensure the types of the extracted parameters
   const categoryValue: string = category;
   const dateValue: Date = new Date(date);
