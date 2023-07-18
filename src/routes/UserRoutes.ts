@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import User, { IUser } from '../models/UserModel';
 const bcrypt = require('bcrypt');
+import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 router.get('/', async (req: Request, res: Response) => {
@@ -48,22 +49,35 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  console.log(typeof email);
+
   try {
-    const user = await User.findOne({ email });
-    console.log(user);
-    
+    const user: IUser | null = await User.findOne({ email });
+
     if (!user) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log(isPasswordValid);
-    
+
+    // Compare the hashed password
+    const isPasswordValid: boolean = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
+
+    // Create a payload for the JWT
+    const payload = {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+    };
+
+    // Create the JWT token with the payload and a secret key
+    const secretKey = 'founditrntoken'; // Replace this with your actual secret key
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
+    console.log(token);
     
-    res.status(200).json(user);
+    // Send the token in the response
+    res.status(200).json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
