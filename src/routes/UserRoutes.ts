@@ -66,14 +66,17 @@ router.post('/login', async (req: Request, res: Response) => {
 
     // Create a payload for the JWT
     const payload = {
-      id: user._id,
+      _id: user._id,
       email: user.email,
       name: user.name,
+      phone: user.phone,
+      items: user.items,
+      img: user.img
     };
 
     // Create the JWT token with the payload and a secret key
     const secretKey = 'founditrntoken'; // Replace this with your actual secret key
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1d' }); // Token expires in 1 hour
     console.log(token);
     
     // Send the token in the response
