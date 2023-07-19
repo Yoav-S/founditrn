@@ -3,17 +3,23 @@ import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 const router = express.Router();
 
-// Route to get all items with pagination support
-router.get('/', async (req: Request, res: Response) => {
-  // Parse skip and limit from query parameters with proper types
-  const skip: number = parseInt(req.query.skip as string);
-  const limit: number = parseInt(req.query.limit as string);
+
+interface ItemQueryParams {
+  skip?: string;
+  limit?: string;
+}
+
+
+router.get('/', async (req: Request<{}, {}, {}, ItemQueryParams>, res: Response) => {
+  const { skip, limit } = req.query;
 
   try {
-    const totalPosts = await Item.countDocuments(); // Get the total count of posts
+    const totalPosts = await Item.countDocuments();
 
-    // Fetch posts based on skip and limit
-    const posts = await Item.find().skip(skip).limit(limit);
+    const skipValue = parseInt(skip ?? '0');
+    const limitValue = parseInt(limit ?? '10');
+
+    const posts = await Item.find().skip(skipValue).limit(limitValue);
 
     res.status(200).json({ totalPosts, posts });
   } catch (error) {
