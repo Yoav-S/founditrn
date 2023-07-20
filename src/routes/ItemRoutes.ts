@@ -10,18 +10,13 @@ interface ItemQueryParams {
 }
 
 
-router.get('/', async (req: Request<{}, {}, {}, ItemQueryParams>, res: Response) => {
-  const { skip, limit } = req.query;
-
+router.get('/', async (req: Request, res: Response) => {
+  const length: number = Number(req.query.number);
+  console.log(length);
+  
   try {
     const totalPosts = await Item.countDocuments();
-
-    const skipValue = parseInt(skip ?? '0');
-    const limitValue = parseInt(limit ?? '10');
-
-    const posts = await Item.find().skip(skipValue).limit(limitValue);
-
-    res.status(200).json({ totalPosts, posts });
+    res.status(200).json(totalPosts);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
