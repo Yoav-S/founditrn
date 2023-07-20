@@ -13,10 +13,9 @@ interface ItemQueryParams {
 router.get('/', async (req: Request, res: Response) => {
   const length: number = Number(req.query.number);
   console.log(length);
-  
   try {
-    const totalPosts = await Item.countDocuments();
-    res.status(200).json(totalPosts);
+    const items: IItem[] = await Item.find().skip(length).limit(10);
+    res.status(200).json(items);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
