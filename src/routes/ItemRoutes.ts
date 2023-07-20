@@ -25,10 +25,8 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', upload.array('images', 10), async (req: Request, res: Response) => {
-  const { category, date, place, description, ownerId, images : any } = req.body;
-  console.log(req.body);
-  
-  const images = req.body.images as Express.Multer.File[];
+  // Images will be available in req.files as Express.Multer.File[]
+  const images = req.files as Express.Multer.File[];
 
   // Check if 'images' is defined and an array
   if (!Array.isArray(images) || images.length === 0) {
@@ -36,15 +34,18 @@ router.post('/insertItem', upload.array('images', 10), async (req: Request, res:
     return;
   }
 
+  // Get the rest of the post properties from the query string
+  const { place, category, description, ownerId, date } = req.query;
+
   try {
     // Process the images array here
     const arrayOfPaths = await uploadImagesToFirebase(images);
 
-    const categoryValue: string = category;
-    const dateValue: Date = new Date(date);
-    const placeValue: string = place;
-    const descriptionValue: string = description;
-    const ownerIdValue: string = ownerId;
+    const categoryValue: string = category as string;
+    const dateValue: Date = new Date(date as string);
+    const placeValue: string = place as string;
+    const descriptionValue: string = description as string;
+    const ownerIdValue: string = ownerId as string;
     const imagesValue: string[] = arrayOfPaths;
 
     const newItem = new Item({
@@ -60,7 +61,7 @@ router.post('/insertItem', upload.array('images', 10), async (req: Request, res:
     const savedItem = await newItem.save();
 
     // Populate the ownerId with the User document
-    await User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
+    await User.findByIdAndUpdate(ownerIdValue, { $push: { items: savedItem._id } }, { new: true });
 
     res.status(200).json({ message: 'Post Uploaded Successfully !' });
   } catch (err) {
@@ -68,5 +69,6 @@ router.post('/insertItem', upload.array('images', 10), async (req: Request, res:
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 export default router;
