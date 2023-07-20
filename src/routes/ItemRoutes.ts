@@ -5,6 +5,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import config from '../config/firebase.config';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
+import uploadImagesToFirebase from '../middlewares/UploadImagesToFirebase';
 
 initializeApp(config.firebaseConfig);
 const storage = getStorage();
@@ -23,25 +24,26 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Route to create a new item
-router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
+router.post('/insertItem', upload.array('images', 10), async (req: Request, res: Response) => {
   const { category, date, place, description, ownerId } = req.body;
-  const images: Express.Multer.File[] = req.files as Express.Multer.File[];
+  const images = req.files as Express.Multer.File[];
 
-  // Upload images to Firebase Storage
-  const imageUrls: string[] = await Promise.all(
-    images.map(async (image) => {
-      const imageRef = ref(storage, `images/${image.originalname}`);
-      await uploadBytes(imageRef, image.buffer);
-      return getDownloadURL(imageRef);
-    })
-  );
+  // Check if 'images' is defined and an array
+  if (!Array.isArray(images) || images.length === 0) {
+    res.status(400).json({ error: 'Please provide images in the request' });
+    return;
+  }
 
   try {
+    // Process the images array here
+    const arrayOfPaths = await uploadImagesToFirebase(images);
+
     const categoryValue: string = category;
     const dateValue: Date = new Date(date);
     const placeValue: string = place;
     const descriptionValue: string = description;
     const ownerIdValue: string = ownerId;
+    const imagesValue: string[] = arrayOfPaths;
 
     const newItem = new Item({
       category: categoryValue,
@@ -49,23 +51,16 @@ router.post('/insertItem', upload.array('images'), async (req: Request, res: Res
       place: placeValue,
       description: descriptionValue,
       ownerId: ownerIdValue,
-      images: imageUrls,
+      images: imagesValue,
     });
 
     // Save the new item to the database
-    newItem
-      .save()
-      .then((savedItem) => {
-        // Populate the ownerId with the User document
-        return User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
-      })
-      .then(() => {
-        res.status(200).json({ message: 'Post Uploaded Successfully!' });
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
-      });
+    const savedItem = await newItem.save();
+
+    // Populate the ownerId with the User document
+    await User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
+
+    res.status(200).json({ message: 'Post Uploaded Successfully !' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
