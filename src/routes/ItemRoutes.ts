@@ -25,10 +25,10 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', upload.array('images', 10), async (req: Request, res: Response) => {
-  const { category, date, place, description, ownerId } = req.body;
-  console.log(req.files);
+  const { category, date, place, description, ownerId, images : any } = req.body;
+  console.log(req.body);
   
-  const images = req.files as Express.Multer.File[];
+  const images = req.body.images as Express.Multer.File[];
 
   // Check if 'images' is defined and an array
   if (!Array.isArray(images) || images.length === 0) {
