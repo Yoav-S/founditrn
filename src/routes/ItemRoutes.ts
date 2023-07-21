@@ -10,14 +10,12 @@ const router: Router = Router();
 
 // Your existing routes and code
 
-
 interface ItemObj {
   category: string;
   place: string;
   description: string;
   ownerId: string;
 }
-
 
 router.get('/', async (req: Request, res: Response) => {
   const length: number = Number(req.query.number);
