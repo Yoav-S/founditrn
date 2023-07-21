@@ -6,17 +6,16 @@ import config from '../config/firebase.config';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 const upload = multer();
-initializeApp(config.firebaseConfig);
 const storage = getStorage();
-const router: Router = express.Router();
+const router: Router = Router();
 
+initializeApp(config.firebaseConfig);
 
 interface ItemObj {
   category: string;
   place: string;
   description: string;
   ownerId: string;
-  imagePaths: string[]; // Array to store the Firebase Storage paths of the uploaded images
 }
 
 
@@ -34,47 +33,58 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
-  const imageAssets = req.body.images;
+  const imageAssets = req.files as Express.Multer.File[];
+
+  // Access the other properties from the formData
   const { place, category, description, ownerId } = req.body;
 
-  // Create an array to store the Firebase Storage paths of the uploaded images
-  const imagePaths: string[] = [];
+  console.log('imageAssets:', imageAssets);
+  console.log('place:', place);
+  console.log('category:', category);
+  console.log('description:', description);
+  console.log('ownerId:', ownerId);
 
-  try {
-    // Upload each image to Firebase Storage
-    for (const image of imageAssets) {
-      const imageRef = ref(storage, `images/${image.fileName}`);
-      await uploadBytes(imageRef, Buffer.from(image.data, 'base64'));
+  // Now, you can proceed to upload each image to the "images" folder in Firebase Storage
+  const imageUrls = [];
+
+  for (const image of imageAssets) {
+    const storageRef = ref(storage, `images/${image.originalname}`);
+
+    try {
+      // Upload the image to Firebase Storage
+      const snapshot = await uploadBytes(storageRef, image.buffer);
 
       // Get the download URL of the uploaded image
-      const downloadURL = await getDownloadURL(imageRef);
-      imagePaths.push(downloadURL);
-    }
+      const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // Create the item object including the image paths
-    const itemObj: ItemObj = {
+      // Push the download URL to the imageUrls array
+      imageUrls.push(downloadURL);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return res.status(500).json({ error: 'Error uploading image' });
+    }
+  }
+
+  try {
+    // Create your item object and store the imageUrls in the database, if needed
+    const newItem: IItem = new Item({
       category,
       place,
       description,
       ownerId,
-      imagePaths,
-    };
+      images: imageUrls, // Store the array of image URLs in the "images" property of the item object
+    });
 
-    const newItem = new Item(itemObj);
+    // Save the new item to the database
     const savedItem = await newItem.save();
 
-    // Log the received data and the saved item
-    console.log('Place:', place);
-    console.log('Category:', category);
-    console.log('Description:', description);
-    console.log('Owner ID:', ownerId);
-    console.log('Image Paths:', imagePaths);
-    console.log('Saved Item:', savedItem);
+    // Populate the ownerId with the User document
+    await User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
 
-    res.sendStatus(200); // Send an OK response
+    res.status(200).json({ message: 'Item created successfully', item: savedItem });
   } catch (error) {
-    console.error('Error handling the request:', error);
-    res.status(500).json({ error: 'Server error' });
+    console.error('Error creating item:', error);
+    res.status(500).json({ error: 'Error creating item' });
   }
 });
 
