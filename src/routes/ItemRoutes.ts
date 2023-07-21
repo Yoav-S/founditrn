@@ -5,10 +5,22 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import config from '../config/firebase.config';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
+const upload = multer();
 
 initializeApp(config.firebaseConfig);
 const storage = getStorage();
 const router: Router = express.Router();
+
+
+
+interface ItemObj {
+  category: string;
+  place: string;
+  description: string;
+  ownerId: string;
+}
+
+
 
 router.get('/', async (req: Request, res: Response) => {
   const length: number = Number(req.query.number);
@@ -23,18 +35,17 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', async (req: Request, res: Response) => {
-  const itemObj = req.query; // Access the itemObj as query parameters
+  const itemObj = req.body as ItemObj; // Replace ItemObj with the actual interface for your item object
+  const files = req.files as Express.Multer.File[];
 
-  // Access other formData fields
-  // For example, if you expect multiple files, you can access them like this:
-  const files = req.files;
-
-  // Process the data as needed
+  // Access the image files in the formData
+  // Each file will have properties like filename, mimetype, and buffer
+  // You can process the files as needed, for example, save them to disk or perform other operations.
 
   console.log(itemObj);
   console.log(files);
 
-  res.sendStatus(200);
+  res.sendStatus(200); // Send an OK response
   
   // Images will be available in req.files as Express.Multer.File[]
 // const images = req.files as Express.Multer.File[];
