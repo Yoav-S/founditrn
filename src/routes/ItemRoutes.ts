@@ -1,12 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import express, { Request, Response, Router } from 'express';
 import multer from 'multer';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import config from '../config/firebase.config';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
-initializeApp(config.firebaseConfig);
-const storage = getStorage();
 const upload = multer();
 
 const router: Router = express.Router();
