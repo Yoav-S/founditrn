@@ -30,23 +30,33 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', upload.any(), async (req: Request, res: Response) => {
-  // Access the item object from the request body
-  const files = req.files as Express.Multer.File[];
+  const imageAssets = req.body.images;
 
-  // Now you have access to all the uploaded files
+  // Access the other properties from the formData
+  const { place, category, description, ownerId } = req.body;
 
-  const itemObj = JSON.parse(req.body.itemObj) as ItemObj;
-  console.log(files);
-  console.log(itemObj);
+
+  console.log('imageAssets:', imageAssets);
+  console.log('place', place);
+  console.log('description', description);
+  console.log('ownerId', ownerId);
+  console.log('category', category);
+  
+  res.send(200);
   
   
-  // Process the image files and the item object as needed
-  // For example, you can save the image files to Firebase Storage and then store their paths in your database along with the item object.
-
-  // Send a response back to the client
-  res.sendStatus(200); // Send an OK response
   
-  // Images will be available in req.files as Express.Multer.File[]
+
+
+
+
+
+
+
+
+
+
+
 // const images = req.files as Express.Multer.File[];
 //
 // // Check if 'images' is defined and an array
