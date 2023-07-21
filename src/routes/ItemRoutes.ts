@@ -34,16 +34,14 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Route to create a new item
-router.post('/insertItem', async (req: Request, res: Response) => {
-  const itemObj = req.body as ItemObj; // Replace ItemObj with the actual interface for your item object
+router.post('/insertItem', upload.array('file'), async (req: Request, res: Response) => {
+  const itemObj = JSON.parse(req.body.itemObj) as ItemObj; // Parse the itemObj from the JSON string
   const files = req.files as Express.Multer.File[];
-
-  // Access the image files in the formData
-  // Each file will have properties like filename, mimetype, and buffer
-  // You can process the files as needed, for example, save them to disk or perform other operations.
 
   console.log(itemObj);
   console.log(files);
+
+  // Your code to save the images to Firebase Storage and store the image paths in the database
 
   res.sendStatus(200); // Send an OK response
   
