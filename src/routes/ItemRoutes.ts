@@ -1,9 +1,10 @@
-import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import multer from 'multer';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
+import analytics from '../config/firebase.config';
+
 const upload = multer();
 const storage = getStorage();
 const router: Router = Router();
@@ -14,8 +15,6 @@ interface ItemObj {
   description: string;
   ownerId: string;
 }
-
-
 
 router.get('/', async (req: Request, res: Response) => {
   const length: number = Number(req.query.number);
@@ -44,7 +43,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
   for (const image of imageAssets) {
     // Generate a unique filename for each image
-    const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const filename = `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     const storageRef = ref(storage, `images/${filename}`);
 
     try {
