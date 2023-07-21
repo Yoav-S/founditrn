@@ -1,14 +1,14 @@
-import { initializeApp } from 'firebase/app';
+import { Request, Response, Router } from 'express';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import express, { Request, Response, Router } from 'express';
-import multer from 'multer';
+import { initializeApp } from 'firebase/app';
 import config from '../config/firebase.config';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
-const upload = multer();
+
 const storage = getStorage();
 const router: Router = Router();
 
+// Initialize Firebase app
 initializeApp(config.firebaseConfig);
 
 interface ItemObj {
