@@ -1,9 +1,8 @@
-import * as dotenv from 'dotenv';
-import { FirebaseOptions } from 'firebase/app'; // Import the FirebaseOptions type
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
 
-dotenv.config();
 
-const firebaseConfig: FirebaseOptions = {
+const firebaseConfig = {
   apiKey: process.env.API_KEY,
   authDomain: process.env.AUTH_DOMAIN,
   projectId: process.env.PROJECT_ID,
@@ -13,6 +12,6 @@ const firebaseConfig: FirebaseOptions = {
   measurementId: process.env.MEASUREMENT_ID,
 };
 
-export default {
-  firebaseConfig,
-};
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+export default analytics;

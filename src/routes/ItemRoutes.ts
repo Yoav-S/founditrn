@@ -2,14 +2,11 @@ import { initializeApp } from 'firebase/app';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import multer from 'multer';
-import config from '../config/firebase.config';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 const upload = multer();
 const storage = getStorage();
 const router: Router = Router();
-
-initializeApp(config.firebaseConfig);
 
 interface ItemObj {
   category: string;
@@ -33,8 +30,8 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', async (req: Request, res: Response) => {
-  const imageAssets = req.body.images as Express.Multer.File[]; // Access the image assets array
-  const { place, category, description, ownerId } = req.body; // Destructure other properties
+  const imageAssets = req.body.images as Express.Multer.File[];
+  const { place, category, description, ownerId } = req.body;
 
   console.log('imageAssets:', imageAssets); // Log the image assets
   console.log('place:', place);
@@ -46,7 +43,9 @@ router.post('/insertItem', async (req: Request, res: Response) => {
   const imageUrls = [];
 
   for (const image of imageAssets) {
-    const storageRef = ref(storage, `images/${image.originalname}`);
+    // Generate a unique filename for each image
+    const filename = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const storageRef = ref(storage, `images/${filename}`);
 
     try {
       // Upload the image to Firebase Storage
