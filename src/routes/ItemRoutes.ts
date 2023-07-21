@@ -7,7 +7,7 @@ import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 initializeApp(config.firebaseConfig);
 const storage = getStorage();
-const upload = multer().array('file'); // Use 'file' as the key to access the image files
+const upload = multer();
 
 const router: Router = express.Router();
 
@@ -33,19 +33,21 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Route to create a new item
-router.post('/insertItem', upload, async (req: Request, res: Response) => {
-  const itemObj = req.body as ItemObj; // Replace ItemObj with the actual interface for your item object
+router.post('/insertItem', upload.any(), async (req: Request, res: Response) => {
+  // Access the item object from the request body
   const files = req.files as Express.Multer.File[];
 
-  // Access the image files in the files array
-  // Each file will have properties like filename, mimetype, and buffer
-  // You can now process the files as needed, for example, save them to Firebase storage.
+  // Now you have access to all the uploaded files
 
-  console.log(itemObj);
+  const itemObj = JSON.parse(req.body.itemObj) as ItemObj;
   console.log(files);
+  console.log(itemObj);
+  
+  
+  // Process the image files and the item object as needed
+  // For example, you can save the image files to Firebase Storage and then store their paths in your database along with the item object.
 
-  // ...rest of the code to handle the image files and other properties
-
+  // Send a response back to the client
   res.sendStatus(200); // Send an OK response
   
   // Images will be available in req.files as Express.Multer.File[]
