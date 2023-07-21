@@ -32,13 +32,11 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Route to create a new item
-router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
-  const imageAssets = req.files as Express.Multer.File[];
+router.post('/insertItem', async (req: Request, res: Response) => {
+  const imageAssets = req.body.images as Express.Multer.File[]; // Access the image assets array
+  const { place, category, description, ownerId } = req.body; // Destructure other properties
 
-  // Access the other properties from the formData
-  const { place, category, description, ownerId } = req.body;
-
-  console.log('imageAssets:', imageAssets);
+  console.log('imageAssets:', imageAssets); // Log the image assets
   console.log('place:', place);
   console.log('category:', category);
   console.log('description:', description);
@@ -81,10 +79,10 @@ router.post('/insertItem', upload.array('images'), async (req: Request, res: Res
     // Populate the ownerId with the User document
     await User.findByIdAndUpdate(ownerId, { $push: { items: savedItem._id } }, { new: true });
 
-    res.status(200).json({ message: 'Item created successfully', item: savedItem });
+    return res.status(200).json({ message: 'Item created successfully', item: savedItem });
   } catch (error) {
     console.error('Error creating item:', error);
-    res.status(500).json({ error: 'Error creating item' });
+    return res.status(500).json({ error: 'Error creating item' });
   }
 });
 
