@@ -1,6 +1,4 @@
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-
+import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -12,6 +10,7 @@ const firebaseConfig = {
   measurementId: process.env.MEASUREMENT_ID,
 };
 
+// Initialize the Firebase app with the configuration
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-export default analytics;
+
+export default app;

@@ -3,11 +3,13 @@ import express, { Request, Response, Router } from 'express';
 import multer from 'multer';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
-import analytics from '../config/firebase.config';
-
+import firebaseApp from '../config/firebase.config'; // Import the Firebase app here
 const upload = multer();
-const storage = getStorage();
+const storage = getStorage(firebaseApp);
 const router: Router = Router();
+
+// Your existing routes and code
+
 
 interface ItemObj {
   category: string;
@@ -15,6 +17,7 @@ interface ItemObj {
   description: string;
   ownerId: string;
 }
+
 
 router.get('/', async (req: Request, res: Response) => {
   const length: number = Number(req.query.number);
