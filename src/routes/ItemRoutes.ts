@@ -1,14 +1,11 @@
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
-import multer from 'multer';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 import firebaseApp from '../config/firebase.config'; // Import the Firebase app here
 const storage = getStorage(firebaseApp);
 const router: Router = Router();
-const upload = multer({ dest: 'uploads/' }); // Set the destination folder for uploaded files
-
-// Your existing routes and code
+import upload from '../..';
 
 interface ItemObj {
   category: string;

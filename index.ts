@@ -1,12 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
-import UserRoutes from './src/routes/UserRoutes'
-import ItemRoutes from './src/routes/ItemRoutes'
-const cors = require('cors');
-const bodyParser = require('body-parser');
-import multer from 'multer'; // Import multer here
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import ItemRoutes from './src/routes/ItemRoutes';
+import UserRoutes from './src/routes/UserRoutes';
+import multer from 'multer';
 
-// Initialize Express app and set up middleware
 const server = express();
 dotenv.config();
 const PORT = process.env.PORT || 8000;
@@ -16,13 +15,12 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(cors());
 
 // Set up multer middleware to handle multipart/form-data
-const upload = multer();
+const upload = multer({ dest: 'uploads/' });
 
 // Mount your routes after setting up multer
-server.use('/items', upload.none(), ItemRoutes);
-
-// User routes
+server.use('/items', upload.array('images'), ItemRoutes);
 server.use('/users', UserRoutes);
 
 // Start the server
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+export default upload;
