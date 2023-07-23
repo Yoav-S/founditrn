@@ -41,16 +41,16 @@ router.post('/insertItem', upload.array('images'), async (req: Request, res: Res
     console.log('images', images);
 
     // Create a new item in the database
-    const newItem: IItem = await Item.create({
-      place,
-      category,
-      description,
-      ownerId,
-      images: images.map(image => ({ url: image.path })), // Save the paths of uploaded images to the database
-    });
-    console.log(newItem);
+  //  const newItem: IItem = await Item.create({
+  //    place,
+  //    category,
+  //    description,
+  //    ownerId,
+  //    images: images.map(image => ({ url: image.path })), // Save the paths of uploaded images to the database
+  //  });
+  //  console.log(newItem);
 
-    res.status(200).json(newItem);
+    res.status(200);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
