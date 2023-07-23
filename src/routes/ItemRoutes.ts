@@ -30,13 +30,32 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
-  // Access the uploaded files
-  const images = req.files; // The uploaded files are available in req.files array
-
-  // Your code to handle the uploaded images
-  // ...
-
-  res.sendStatus(200);
+  try {
+    const { place, category, description, ownerId } = req.body; // Extract other fields from req.body
+    const images = req.files as Express.Multer.File[]; // Extract the uploaded images as an array
+    console.log('place', place);
+    console.log('category', category);
+    console.log('description', description);
+    console.log('ownerId', ownerId);
+    console.log('images', images);
+    
+    
+    
+    // Create a new item in the database
+    const newItem: IItem = await Item.create({
+      place,
+      category,
+      description,
+      ownerId,
+      images: images.map(image => ({ url: image.path })), // Save the paths of uploaded images to the database
+    });
+    console.log(newItem);
+    
+    res.status(200).json(newItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 
