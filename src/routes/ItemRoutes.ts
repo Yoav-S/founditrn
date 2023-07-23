@@ -3,6 +3,7 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
+import fs from 'fs';
 
 const router: Router = Router();
 // ItemRoutes.ts
@@ -35,11 +36,15 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
    const imageUrls: string[] = [];
    for (const image of images) {
-     const imageRef = ref(storage, `images/${image.filename}`);
-     await uploadBytes(imageRef, image.buffer);
-     const downloadUrl = await getDownloadURL(imageRef);
-     imageUrls.push(downloadUrl);
-   }
+    const imagePath = image.path;
+    const imageBuffer = fs.readFileSync(imagePath);
+  
+    const imageRef = ref(storage, `images/${image.filename}`);
+    await uploadBytes(imageRef, imageBuffer);
+    const downloadUrl = await getDownloadURL(imageRef);
+    imageUrls.push(downloadUrl)
+  }
+  
 
    // Generate current date and time
    const currentDate = new Date();
