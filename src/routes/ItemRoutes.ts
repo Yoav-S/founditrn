@@ -50,8 +50,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
       const downloadUrl = await getDownloadURL(imageRef);
       imageUrls = [...imageUrls, downloadUrl];
     }
-    console.log(imageUrls);
-    
+
     // Create a new item in the database
     const newItem: IItem = await Item.create({
       place,
@@ -65,9 +64,18 @@ router.post('/insertItem', async (req: Request, res: Response) => {
     // Populate the ownerId field with the corresponding User object
     const populatedNewItem = await Item.findById(newItem._id).populate('ownerId');
 
+    // Add the newItem's _id to the user's items array
+    const user = await User.findById(ownerId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const newitemsArray = [...user.items, newItem.id];
+    user.items = newitemsArray;
+    await user.save();
+
     console.log('New item created:', populatedNewItem);
 
-    res.status(200).json(populatedNewItem);
+    res.status(200).json({ message: 'Post Upload Successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
