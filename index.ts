@@ -16,7 +16,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(cors());
 
 // Set up multer middleware to handle multipart/form-data
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: 'uploads/', limits: { fileSize: 10 * 1024 * 1024 } });
 
 // Mount your routes after setting up multer
 server.use('/items', upload.array('images'), ItemRoutes);
