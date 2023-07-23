@@ -4,6 +4,7 @@ import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 import fs from 'fs';
+import mongoose from 'mongoose';
 
 const router: Router = Router();
 // ItemRoutes.ts
@@ -32,40 +33,41 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/insertItem', async (req: Request, res: Response) => {
   const images = req.files as Express.Multer.File[];
   const { place, category, description, ownerId } = req.body;
- try {
 
-   const imageUrls: string[] = [];
-   for (const image of images) {
-    const imagePath = image.path;
-    const imageBuffer = fs.readFileSync(imagePath);
-  
-    const imageRef = ref(storage, `images/${image.filename}`);
-    await uploadBytes(imageRef, imageBuffer);
-    const downloadUrl = await getDownloadURL(imageRef);
-    imageUrls.push(downloadUrl)
+  try {
+    // Validate ownerId as a valid ObjectId
+
+
+    let imageUrls: string[] = [];
+    for (const image of images) {
+      const imagePath = image.path;
+      const imageBuffer = fs.readFileSync(imagePath);
+
+      const imageRef = ref(storage, `images/${image.filename}`);
+      await uploadBytes(imageRef, imageBuffer);
+      const downloadUrl = await getDownloadURL(imageRef);
+      imageUrls = [...imageUrls, downloadUrl];
+    }
+    
+    const newItem: IItem = await Item.create({
+      place,
+      category,
+      description,
+      ownerId,
+      images: imageUrls.map((url) => ({ url })), // Save the download URLs of uploaded images to the database
+      date: new Date(), // Save the current date and time to the database
+    });
+
+    // Populate the ownerId field with the corresponding User object
+    const populatedNewItem = await Item.findById(newItem._id).populate('ownerId');
+
+    console.log('New item created:', populatedNewItem);
+
+    res.status(200).json(populatedNewItem);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
   }
-  
-
-   // Generate current date and time
-   const currentDate = new Date();
-
-   // Create a new item in the database
-   const newItem: IItem = await Item.create({
-     place,
-     category,
-     description,
-     ownerId,
-     images: imageUrls.map(url => ({ url })), // Save the download URLs of uploaded images to the database
-     date: currentDate, // Save the current date and time to the database
-   });
-
-   console.log('New item created:', newItem);
-
-   res.status(200).json(newItem);
- } catch (error) {
-   console.error(error);
-   res.status(500).json({ error: 'Server error' });
- }
 });
 
 
