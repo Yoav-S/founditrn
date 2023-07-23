@@ -36,7 +36,9 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
   try {
     // Validate ownerId as a valid ObjectId
-
+    if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+      return res.status(400).json({ error: 'Invalid ownerId' });
+    }
 
     let imageUrls: string[] = [];
     for (const image of images) {
@@ -48,7 +50,9 @@ router.post('/insertItem', async (req: Request, res: Response) => {
       const downloadUrl = await getDownloadURL(imageRef);
       imageUrls = [...imageUrls, downloadUrl];
     }
+    console.log(imageUrls);
     
+    // Create a new item in the database
     const newItem: IItem = await Item.create({
       place,
       category,
