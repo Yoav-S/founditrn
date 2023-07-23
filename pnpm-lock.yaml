@@ -36,7 +36,7 @@ dependencies:
     specifier: ^7.3.2
     version: 7.3.2
   multer:
-    specifier: ^1.4.5-lts.1
+    specifier: 1.4.5-lts.1
     version: 1.4.5-lts.1
   node-datetime:
     specifier: ^2.1.2
