@@ -7,7 +7,7 @@ export interface IItem extends Document {
   place: string;
   description: string;
   ownerId: Types.ObjectId | IUser;
-  images: (string | undefined)[];
+  images: string[];
 }
 
 const itemSchema = new Schema<IItem>({
