@@ -5,7 +5,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import ItemRoutes from './src/routes/ItemRoutes';
 import UserRoutes from './src/routes/UserRoutes';
-import multer from 'multer';
+const multer = require('multer');
 
 const server = express();
 dotenv.config();

@@ -26,11 +26,9 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Set up multer middleware to handle multipart/form-data
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
 
 // Route to create a new item
-router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
+router.post('/insertItem', async (req: Request, res: Response) => {
   try {
     const { place, category, description, ownerId } = req.body; // Extract other fields from req.body
     const images = req.files as Express.Multer.File[]; // Extract the uploaded images as an array
