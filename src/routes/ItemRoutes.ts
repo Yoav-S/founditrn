@@ -32,6 +32,9 @@ router.get('/', async (req: Request, res: Response) => {
 // Route to create a new item
 router.post('/insertItem', async (req: Request, res: Response) => {
   const images = req.files as Express.Multer.File[];
+  console.log(images.length);
+  console.log(images);
+  
   res.status(200).json(images);
 // try {
 //   const { place, category, description, ownerId } = req.body;
