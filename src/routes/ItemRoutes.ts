@@ -34,6 +34,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
   try {
     const { place, category, description, ownerId } = req.body;
     const images = req.files as Express.Multer.File[];
+    res.send(200).json(images);
     console.log('place', place);
     console.log('category', category);
     console.log('description', description);
