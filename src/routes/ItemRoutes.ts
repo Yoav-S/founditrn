@@ -30,7 +30,6 @@ router.get('/', async (req: Request, res: Response) => {
 
 // Route to create a new item
 router.post('/insertItem', async (req: Request, res: Response) => {
-
   console.log(req); 
   res.sendStatus(200);
 });
