@@ -3,9 +3,9 @@ import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 import firebaseApp from '../config/firebase.config'; // Import the Firebase app here
+
 const storage = getStorage(firebaseApp);
 const router: Router = Router();
-import upload from '../..';
 
 interface ItemObj {
   category: string;
@@ -26,7 +26,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // Route to create a new item
-router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
+router.post('/insertItem', async (req: Request, res: Response) => {
   try {
     const { place, category, description, ownerId } = req.body; // Extract other fields from req.body
     const images = req.files as Express.Multer.File[]; // Extract the uploaded images as an array
@@ -35,8 +35,6 @@ router.post('/insertItem', upload.array('images'), async (req: Request, res: Res
     console.log('description', description);
     console.log('ownerId', ownerId);
     console.log('images', images);
-    
-    
     
     // Create a new item in the database
     const newItem: IItem = await Item.create({
@@ -54,6 +52,5 @@ router.post('/insertItem', upload.array('images'), async (req: Request, res: Res
     res.status(500).json({ error: 'Server error' });
   }
 });
-
 
 export default router;
