@@ -2,7 +2,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
-import firebaseApp from '../config/firebase.config'; // Import the Firebase app here
+import firebaseApp from '../config/firebase.config';
 
 const storage = getStorage(firebaseApp);
 const router: Router = Router();
@@ -25,8 +25,12 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// Set up multer middleware to handle multipart/form-data
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
 // Route to create a new item
-router.post('/insertItem', async (req: Request, res: Response) => {
+router.post('/insertItem', upload.array('images'), async (req: Request, res: Response) => {
   try {
     const { place, category, description, ownerId } = req.body; // Extract other fields from req.body
     const images = req.files as Express.Multer.File[]; // Extract the uploaded images as an array
@@ -35,7 +39,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
     console.log('description', description);
     console.log('ownerId', ownerId);
     console.log('images', images);
-    
+
     // Create a new item in the database
     const newItem: IItem = await Item.create({
       place,
@@ -45,7 +49,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
       images: images.map(image => ({ url: image.path })), // Save the paths of uploaded images to the database
     });
     console.log(newItem);
-    
+
     res.status(200).json(newItem);
   } catch (error) {
     console.error(error);
