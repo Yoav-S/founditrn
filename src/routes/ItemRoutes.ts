@@ -4,7 +4,6 @@ import multer from 'multer';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 import firebaseApp from '../config/firebase.config'; // Import the Firebase app here
-const upload = multer();
 const storage = getStorage(firebaseApp);
 const router: Router = Router();
 
