@@ -35,10 +35,6 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
    const imageUrls: string[] = [];
    for (const image of images) {
-     if (!image.buffer || !(image.buffer instanceof Buffer)) {
-       return res.status(400).json({ error: 'Invalid image data.' });
-     }
-
      const imageRef = ref(storage, `images/${image.filename}`);
      await uploadBytes(imageRef, image.buffer);
      const downloadUrl = await getDownloadURL(imageRef);
