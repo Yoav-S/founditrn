@@ -1,11 +1,12 @@
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../config/firebase.config';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
-import firebaseApp from '../config/firebase.config';
 
-const storage = getStorage(firebaseApp);
 const router: Router = Router();
+// ItemRoutes.ts
+console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
 
 interface ItemObj {
   category: string;
@@ -28,6 +29,7 @@ router.get('/', async (req: Request, res: Response) => {
 // Set up multer middleware to handle multipart/form-data
 
 // Route to create a new item
+// Route to create a new item
 router.post('/insertItem', async (req: Request, res: Response) => {
   try {
     const { place, category, description, ownerId } = req.body;
@@ -38,9 +40,18 @@ router.post('/insertItem', async (req: Request, res: Response) => {
     console.log('ownerId', ownerId);
     console.log('images', images);
 
+    // Check if images array contains data
+    if (!Array.isArray(images) || images.length === 0) {
+      return res.status(400).json({ error: 'No images were uploaded.' });
+    }
+
     // Upload images to Firebase Storage and get download URLs
     const imageUrls: string[] = [];
     for (const image of images) {
+      if (!image.buffer || !(image.buffer instanceof Buffer)) {
+        return res.status(400).json({ error: 'Invalid image data.' });
+      }
+
       const imageRef = ref(storage, `images/${image.filename}`);
       await uploadBytes(imageRef, image.buffer);
       const downloadUrl = await getDownloadURL(imageRef);
@@ -68,5 +79,6 @@ router.post('/insertItem', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
 
 export default router;
