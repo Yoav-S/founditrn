@@ -58,7 +58,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
       category,
       description,
       ownerId,
-      images: imageUrls.map((url) => ({ url })), // Save the download URLs of uploaded images to the database
+      images: imageUrls, // Save the image URLs directly as an array of strings
       date: new Date(), // Save the current date and time to the database
     });
 
