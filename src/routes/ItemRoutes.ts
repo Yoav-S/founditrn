@@ -18,12 +18,30 @@ interface ItemObj {
 }
 
 router.get('/', async (req: Request, res: Response) => {
-  const length: number = Number(req.query.number);
   try {
-    const items: IItem[] = await Item.find().skip(length).limit(10);
-    res.status(200).json(items);
+    // Extract the startIndex from the query parameters, default to 0 if not provided
+    const startIndex = parseInt(req.query.startIndex as string, 10) || 0;
+
+    // Fetch the next 10 items from the database
+    const items = await Item.find().skip(startIndex).limit(10);
+
+    // Download the images from Firebase and add them to the item objects
+    const itemsWithImages = await Promise.all(
+      items.map(async (item) => {
+        const imageUrls = await Promise.all(
+          item.images.map(async (imageUrl) => {
+            const imageRef = ref(storage, imageUrl);
+            return getDownloadURL(imageRef);
+          })
+        );
+
+        return { ...item.toObject(), images: imageUrls };
+      })
+    );
+
+    res.status(200).json(itemsWithImages);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching items:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
