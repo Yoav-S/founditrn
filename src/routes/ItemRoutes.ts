@@ -5,7 +5,7 @@ import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 import fs from 'fs';
 import mongoose from 'mongoose';
-
+const axios = require('axios');
 const router: Router = Router();
 // ItemRoutes.ts
 console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
@@ -17,6 +17,13 @@ interface ItemObj {
   ownerId: string;
 }
 
+
+router.get('/getpostimages', async (req: Request, res: Response) => {
+
+});
+
+
+
 router.get('/', async (req: Request, res: Response) => {
   try {
     // Extract the startIndex from the query parameters, default to 0 if not provided
@@ -25,21 +32,7 @@ router.get('/', async (req: Request, res: Response) => {
     // Fetch the next 10 items from the database
     const items = await Item.find().skip(startIndex).limit(10);
 
-    // Download the images from Firebase and add them to the item objects
-    const itemsWithImages = await Promise.all(
-      items.map(async (item) => {
-        const imageUrls = await Promise.all(
-          item.images.map(async (imageUrl) => {
-            const imageRef = ref(storage, imageUrl);
-            return getDownloadURL(imageRef);
-          })
-        );
-
-        return { ...item.toObject(), images: imageUrls };
-      })
-    );
-
-    res.status(200).json(itemsWithImages);
+    res.status(200).json(items);
   } catch (error) {
     console.error('Error fetching items:', error);
     res.status(500).json({ error: 'Server error' });
