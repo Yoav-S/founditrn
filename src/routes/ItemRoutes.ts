@@ -3,9 +3,9 @@ import { ref, uploadBytes, getDownloadURL, uploadBytesResumable, StorageReferenc
 import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
-import fs from 'fs';
+import { promises as fsPromises } from 'fs'; // Import the 'fs' module for file operations
+const { readFile } = fsPromises;
 import mongoose from 'mongoose';
-const axios = require('axios');
 const router: Router = Router();
 const XMLHttpRequest = require('xhr2');
 console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
@@ -50,7 +50,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 
 router.post('/insertItem', async (req: Request, res: Response) => {
-  const images = req.files as Express.Multer.File[];
+  const images: Express.Multer.File[] = req.files as Express.Multer.File[];
   const { place, category, description, ownerId } = req.body;
 
   try {
@@ -61,15 +61,20 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
     let imageUrls: string[] = [];
     for (const image of images) {
-      //const dateTime = Date.now();
-      const imageRef = ref(storage, image.originalname);
-      const storageImagesRef = ref(storage, `images/${image.originalname}`);
-      imageRef.name === storageImagesRef.name;
-      imageRef.fullPath === storageImagesRef.fullPath;
-      uploadBytes(storageImagesRef, image.buffer);
-      const downloadUrl = await getDownloadURL(storageImagesRef);
-      imageUrls = [...imageUrls, downloadUrl];
-      console.log('File successfully uploaded');
+      try {
+        const imageBuffer = await readFile(image.path);
+        const uint8Array = new Uint8Array(imageBuffer);
+  
+        const imageRef = ref(storage, image.originalname);
+        const storageImagesRef = ref(storage, `images/${image.originalname}`);
+  
+        await uploadBytes(storageImagesRef, uint8Array);
+        const downloadUrl = await getDownloadURL(storageImagesRef);
+        imageUrls = [...imageUrls, downloadUrl];
+        console.log('File successfully uploaded');
+      } catch (error) {
+        console.error('Error uploading the image:', error);
+      }
     }
 
    // Create a new item in the database
