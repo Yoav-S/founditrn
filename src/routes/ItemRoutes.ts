@@ -1,5 +1,5 @@
 import { storage } from '../config/firebase.config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, uploadBytesResumable, StorageReference, uploadString } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
@@ -7,7 +7,7 @@ import fs from 'fs';
 import mongoose from 'mongoose';
 const axios = require('axios');
 const router: Router = Router();
-// ItemRoutes.ts
+const XMLHttpRequest = require('xhr2');
 console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
 
 interface ItemObj {
@@ -19,6 +19,14 @@ interface ItemObj {
 
 
 router.get('/getpostimages', async (req: Request, res: Response) => {
+const images: string[] = req.query.images as string[]; 
+const storageref = ref(storage, `gs://lostandfound-f2f82.appspot.com/images/3135715.png    1690380121196`)
+console.log(storageref);
+
+//const imagefile = await getDownloadURL(storageref)
+//console.log(imagefile);
+res.status(200);
+
 
 });
 
@@ -53,40 +61,42 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
     let imageUrls: string[] = [];
     for (const image of images) {
-      const imagePath = image.path;
-      const imageBuffer = fs.readFileSync(imagePath);
-
-      const imageRef = ref(storage, `images/${image.filename}`);
-      await uploadBytes(imageRef, imageBuffer);
-      const downloadUrl = await getDownloadURL(imageRef);
+      //const dateTime = Date.now();
+      const imageRef = ref(storage, image.originalname);
+      const storageImagesRef = ref(storage, `images/${image.originalname}`);
+      imageRef.name === storageImagesRef.name;
+      imageRef.fullPath === storageImagesRef.fullPath;
+      uploadBytes(storageImagesRef, image.buffer);
+      const downloadUrl = await getDownloadURL(storageImagesRef);
       imageUrls = [...imageUrls, downloadUrl];
+      console.log('File successfully uploaded');
     }
 
-    // Create a new item in the database
-    const newItem: IItem = await Item.create({
-      place,
-      category,
-      description,
-      ownerId,
-      images: imageUrls, // Save the image URLs directly as an array of strings
-      date: new Date(), // Save the current date and time to the database
-    });
+   // Create a new item in the database
+   const newItem: IItem = await Item.create({
+     place,
+     category,
+     description,
+     ownerId,
+     images: imageUrls, // Save the image URLs directly as an array of strings
+     date: new Date(), // Save the current date and time to the database
+   });
 
-    // Populate the ownerId field with the corresponding User object
-    const populatedNewItem = await Item.findById(newItem._id).populate('ownerId');
+   // Populate the ownerId field with the corresponding User object
+   const populatedNewItem = await Item.findById(newItem._id).populate('ownerId');
 
-    // Add the newItem's _id to the user's items array
-    const user = await User.findById(ownerId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    const newitemsArray = [...user.items, newItem.id];
-    user.items = newitemsArray;
-    await user.save();
+   // Add the newItem's _id to the user's items array
+   const user = await User.findById(ownerId);
+   if (!user) {
+     return res.status(404).json({ error: 'User not found' });
+   }
+   const newitemsArray = [...user.items, newItem.id];
+   user.items = newitemsArray;
+   await user.save();
 
-    console.log('New item created:', populatedNewItem);
+   console.log('New item created:', populatedNewItem);
 
-    res.status(200).json({ message: 'Post Upload Successfully' });
+    res.status(200).json(imageUrls);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -95,3 +105,5 @@ router.post('/insertItem', async (req: Request, res: Response) => {
 
 
 export default router;
+
+

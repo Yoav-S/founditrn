@@ -47,6 +47,12 @@ dependencies:
   node-datetime:
     specifier: ^2.1.2
     version: 2.1.2
+  uuid4:
+    specifier: ^2.0.3
+    version: 2.0.3
+  xhr2:
+    specifier: ^0.2.1
+    version: 0.2.1
 
 devDependencies:
   '@types/body-parser':
@@ -7482,6 +7488,10 @@ packages:
     engines: {node: '>= 0.4.0'}
     dev: false
 
+  /uuid4@2.0.3:
+    resolution: {integrity: sha512-CTpAkEVXMNJl2ojgtpLXHgz23dh8z81u6/HEPiQFOvBc/c2pde6TVHmH4uwY0d/GLF3tb7+VDAj4+2eJaQSdZQ==}
+    dev: false
+
   /uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
     hasBin: true
@@ -7636,6 +7646,11 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+    dev: false
+
+  /xhr2@0.2.1:
+    resolution: {integrity: sha512-sID0rrVCqkVNUn8t6xuv9+6FViXjUVXq8H5rWOH2rz9fDNQEd4g0EA2XlcEdJXRz5BMEn4O1pJFdT+z4YHhoWw==}
+    engines: {node: '>= 6'}
     dev: false
 
   /xmlcreate@2.0.4:
