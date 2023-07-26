@@ -1,11 +1,12 @@
 import { storage } from '../config/firebase.config';
-import { ref, uploadBytes, getDownloadURL, uploadBytesResumable, StorageReference, uploadString } from 'firebase/storage';
+import { ref, uploadBytes, listAll, getDownloadURL, uploadBytesResumable, StorageReference, uploadString } from 'firebase/storage';
 import express, { Request, Response, Router } from 'express';
 import Item, { IItem } from '../models/ItemModel';
 import User from '../models/UserModel';
 import { promises as fsPromises } from 'fs'; // Import the 'fs' module for file operations
 const { readFile } = fsPromises;
 import mongoose from 'mongoose';
+import { Url } from 'url';
 const router: Router = Router();
 const XMLHttpRequest = require('xhr2');
 console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
@@ -20,14 +21,20 @@ interface ItemObj {
 
 router.get('/getpostimages', async (req: Request, res: Response) => {
 const images: string[] = req.query.images as string[]; 
-const storageref = ref(storage, `gs://lostandfound-f2f82.appspot.com/images/3135715.png    1690380121196`)
-console.log(storageref);
-
-//const imagefile = await getDownloadURL(storageref)
-//console.log(imagefile);
-res.status(200);
-
-
+const imageListRef = ref(storage, 'images/')
+const formData = new FormData();
+listAll(imageListRef).then((response) => {
+  response.items.forEach(async(item) => {
+    const imageUrl = await getDownloadURL(item);
+    images.forEach(itemimageUrl=> {
+      if(imageUrl === itemimageUrl){
+        formData.append('images', itemimageUrl);
+      }
+    })
+    console.log(formData);
+  })
+})
+res.status(200).json(formData);
 });
 
 
@@ -67,7 +74,8 @@ router.post('/insertItem', async (req: Request, res: Response) => {
   
         const imageRef = ref(storage, image.originalname);
         const storageImagesRef = ref(storage, `images/${image.originalname}`);
-  
+        imageRef.name === storageImagesRef.name
+        imageRef.fullPath === storageImagesRef.fullPath
         await uploadBytes(storageImagesRef, uint8Array).then((response) => {
           console.log('response', response);
         })
