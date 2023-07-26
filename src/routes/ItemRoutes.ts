@@ -27,13 +27,20 @@ listAll(imageListRef).then((response) => {
   response.items.forEach(async(item) => {
     const imageUrl = await getDownloadURL(item);
     images.forEach(itemimageUrl=> {
+      console.log(itemimageUrl);
+      console.log(imageUrl);
       if(imageUrl === itemimageUrl){
-        formData.append('images', item.fullPath);
+        console.log('equal image');
+        formData.append('images', imageUrl);
       }
     })
-    console.log(formData);
+
   })
 })
+formData.forEach(item=>{
+  console.log(item);
+  
+});
 res.status(200).json(formData);
 });
 
@@ -73,7 +80,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
         const uint8Array = new Uint8Array(imageBuffer);
   
         const imageRef = ref(storage, image.originalname);
-        const storageImagesRef = ref(storage, `images/${image.originalname}`);
+        const storageImagesRef = ref(storage, `images/${ownerId}/${image.originalname}`);
         imageRef.name === storageImagesRef.name
         imageRef.fullPath === storageImagesRef.fullPath
         await uploadBytes(storageImagesRef, uint8Array).then((response) => {
