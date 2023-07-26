@@ -28,7 +28,7 @@ listAll(imageListRef).then((response) => {
     const imageUrl = await getDownloadURL(item);
     images.forEach(itemimageUrl=> {
       if(imageUrl === itemimageUrl){
-        formData.append('images', itemimageUrl);
+        formData.append('images', item.fullPath);
       }
     })
     console.log(formData);
