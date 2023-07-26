@@ -68,7 +68,9 @@ router.post('/insertItem', async (req: Request, res: Response) => {
         const imageRef = ref(storage, image.originalname);
         const storageImagesRef = ref(storage, `images/${image.originalname}`);
   
-        await uploadBytes(storageImagesRef, uint8Array);
+        await uploadBytes(storageImagesRef, uint8Array).then((response) => {
+          console.log('response', response);
+        })
         const downloadUrl = await getDownloadURL(storageImagesRef);
         imageUrls = [...imageUrls, downloadUrl];
         console.log('File successfully uploaded');
