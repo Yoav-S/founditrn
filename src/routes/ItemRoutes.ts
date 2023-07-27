@@ -33,6 +33,8 @@ async function getImageUrls(images: string[]): Promise<string[]> {
         break; // Break the loop after finding a match
       }
     }
+    console.log(formData);
+    
   }
 
   // Extract and convert the FormDataEntryValue[] to an array of strings
