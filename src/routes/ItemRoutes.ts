@@ -50,7 +50,8 @@ async function getImageUrls(images: string[]): Promise<string[]> {
 
 router.get('/getpostimages', async (req: Request, res: Response) => {
   const images: string[] = req.query.images as string[];
-
+  console.log(images);
+  
   try {
     const matchedImageUrls = await getImageUrls(images);
     res.status(200).json(matchedImageUrls);
