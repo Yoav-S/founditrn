@@ -80,7 +80,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
         const uint8Array = new Uint8Array(imageBuffer);
   
         const imageRef = ref(storage, image.originalname);
-        const storageImagesRef = ref(storage, `images/${ownerId}/${image.originalname}`);
+        const storageImagesRef = ref(storage, `images/${image.originalname}`);
         imageRef.name === storageImagesRef.name
         imageRef.fullPath === storageImagesRef.fullPath
         await uploadBytes(storageImagesRef, uint8Array).then((response) => {
