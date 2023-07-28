@@ -17,50 +17,6 @@ interface ItemObj {
   description: string;
   ownerId: string;
 }
-async function getImageUrls(images: string[]): Promise<string[]> {
-  const imageListRef = ref(storage, 'images/');
-  const formData = new FormData();
-
-  const response = await listAll(imageListRef);
-
-  for (const item of response.items) {
-    const imageUrl = await getDownloadURL(item);
-    const decodedUrl = decodeURIComponent(imageUrl);
-
-    for (const itemImageUrl of images) {
-      if (decodedUrl === itemImageUrl) {
-        formData.append('images', imageUrl);
-        break; // Break the loop after finding a match
-      }
-    }
-    console.log(formData);
-    
-  }
-
-  // Extract and convert the FormDataEntryValue[] to an array of strings
-  const matchedImageUrls: string[] = [];
-  formData.getAll('images').forEach((value) => {
-    if (typeof value === 'string') {
-      matchedImageUrls.push(value);
-    }
-  });
-
-  return matchedImageUrls;
-}
-
-router.get('/getpostimages', async (req: Request, res: Response) => {
-  const images: string[] = req.query.images as string[];
-  console.log(images);
-  
-  try {
-    const matchedImageUrls = await getImageUrls(images);
-    res.status(200).json(matchedImageUrls);
-  } catch (error) {
-    console.error('Error processing images:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
 
 router.get('/', async (req: Request, res: Response) => {
   try {
