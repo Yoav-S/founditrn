@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import User, { IUser } from '../models/UserModel';
 const bcrypt = require('bcrypt');
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
+import Item, { IItem } from './../models/ItemModel';
 const router = express.Router();
 
 router.get('/', async (req: Request, res: Response) => {
@@ -45,7 +47,24 @@ router.post('/signup', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+router.get('/items/:ownerId', async (req: Request, res: Response) => {
+  try {
+    const { ownerId } = req.params;
 
+    // Make sure the provided ownerId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+      return res.status(400).json({ error: 'Invalid ownerId' });
+    }
+
+    // Query the database to find all items with the given ownerId
+    const items: IItem[] = await Item.find({ ownerId });
+
+    // Send the array of items as a response
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -76,7 +95,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
     // Create the JWT token with the payload and a secret key
     const secretKey = 'founditrntoken'; // Replace this with your actual secret key
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1d' }); // Token expires in 1 hour
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
     console.log(token);
     
     // Send the token in the response

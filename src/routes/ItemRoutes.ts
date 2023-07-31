@@ -6,7 +6,6 @@ import User from '../models/UserModel';
 import { promises as fsPromises } from 'fs'; // Import the 'fs' module for file operations
 const { readFile } = fsPromises;
 import mongoose from 'mongoose';
-import { Url } from 'url';
 const router: Router = Router();
 const XMLHttpRequest = require('xhr2');
 console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
@@ -33,7 +32,11 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-
+router.get('/getitemsbyid', async (req : Request, res : Response) => {
+  const { idList } = req.params;
+  console.log(idList);
+  
+})
 
 router.post('/insertItem', async (req: Request, res: Response) => {
   const images: Express.Multer.File[] = req.files as Express.Multer.File[];
