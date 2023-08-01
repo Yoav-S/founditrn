@@ -47,7 +47,10 @@ router.post('/signup', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-router.get('/items/:ownerId', async (req: Request, res: Response) => {
+
+
+
+router.get('/getitemsbyid', async (req: Request, res: Response) => {
   try {
     const { ownerId } = req.params;
 
