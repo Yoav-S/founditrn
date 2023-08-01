@@ -50,7 +50,7 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 
 
-router.get('/getitemsbyid', async (req: Request, res: Response) => {
+router.get('/:ownerId', async (req: Request, res: Response) => {
   try {
     const { ownerId } = req.params;
 
