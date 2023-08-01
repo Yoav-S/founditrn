@@ -7,7 +7,6 @@ import { promises as fsPromises } from 'fs'; // Import the 'fs' module for file 
 const { readFile } = fsPromises;
 import mongoose from 'mongoose';
 const router: Router = Router();
-const XMLHttpRequest = require('xhr2');
 console.log('Firebase Storage Bucket:', storage.app.options.storageBucket); // or console.log('Firebase Storage Bucket:', ref(storage, '/').toString());
 
 interface ItemObj {
@@ -32,11 +31,24 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/getitemsbyid', async (req : Request, res : Response) => {
-  const { idList } = req.params;
-  console.log(idList);
-  
-})
+
+router.get('/getitemsbyid/:ownerId', async (req: Request, res: Response) => {
+  try {
+    const {ownerId} = req.params   
+    // Make sure the provided ownerId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+      return res.status(400).json({ error: 'Invalid ownerId' });
+    }
+
+    // Query the database to find all items with the given ownerId
+    const items: IItem[] = await Item.find({ ownerId });
+    
+    // Send the array of items as a response
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.post('/insertItem', async (req: Request, res: Response) => {
   const images: Express.Multer.File[] = req.files as Express.Multer.File[];

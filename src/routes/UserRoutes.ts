@@ -50,24 +50,7 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 
 
-router.get('/:ownerId', async (req: Request, res: Response) => {
-  try {
-    const { ownerId } = req.params;
 
-    // Make sure the provided ownerId is a valid ObjectId
-    if (!mongoose.Types.ObjectId.isValid(ownerId)) {
-      return res.status(400).json({ error: 'Invalid ownerId' });
-    }
-
-    // Query the database to find all items with the given ownerId
-    const items: IItem[] = await Item.find({ ownerId });
-
-    // Send the array of items as a response
-    res.json(items);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
 
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
