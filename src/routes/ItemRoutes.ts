@@ -34,7 +34,7 @@ router.get('/', async (req: Request, res: Response) => {
 
 router.get('/getitemsbyid/:ownerId', async (req: Request, res: Response) => {
   try {
-    const {ownerId} = req.params   
+    const {ownerId} = req.params;   
     // Make sure the provided ownerId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(ownerId)) {
       return res.status(400).json({ error: 'Invalid ownerId' });
@@ -53,7 +53,8 @@ router.get('/getitemsbyid/:ownerId', async (req: Request, res: Response) => {
 router.post('/insertItem', async (req: Request, res: Response) => {
   const images: Express.Multer.File[] = req.files as Express.Multer.File[];
   const { place, category, description, ownerId } = req.body;
-
+  console.log(images);
+  
   try {
     // Validate ownerId as a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(ownerId)) {
