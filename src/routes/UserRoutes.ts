@@ -50,7 +50,23 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 
 
+router.get('/getuserbyownerid/:ownerid', async (req: Request, res: Response) => {
+  const { ownerid } = req.params;
+  try {
+    // Search for the user in the MongoDB User model using the provided ownerId
+    const user = await User.findOne({ _id: ownerid }, { name: 1, email: 1, phone: 1 });
 
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // If the user is found, send the user object containing only name, email, and phone properties
+    res.json(user);
+  } catch (err) {
+    console.error('Error fetching user:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
