@@ -113,6 +113,24 @@ router.post('/insertItem', async (req: Request, res: Response) => {
   }
 });
 
+router.delete('/deleteitembyid/:id', async (req: Request, res: Response) => {
+  const { id } = req.params;
+  
+  try {
+    // Search for the item in the MongoDB Item model using the provided id and delete it
+    const deletedItem = await Item.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return res.status(404).json({ error: 'Item not found' });
+    }
+
+    // If the item is found and deleted successfully, send a success message
+    res.json({ message: 'Item deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting item:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 export default router;
 
