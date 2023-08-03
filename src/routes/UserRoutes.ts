@@ -47,7 +47,7 @@ router.post('/signup', async (req: Request, res: Response) => {
 });
 
 router.patch('/updatename', async (req: Request, res: Response) => {
-  const { name, id } = req.params;
+  const { name, id } = req.query;
   console.log(name);
   console.log(id);
   
@@ -61,7 +61,7 @@ router.patch('/updatename', async (req: Request, res: Response) => {
     }
 
     // Update the user's name
-    user.name = name;
+    user.name = name as string;
     await user.save();
 
     return res.status(200).json({ message: 'Name updated successfully' });
