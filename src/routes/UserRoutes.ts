@@ -48,7 +48,10 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 router.patch('/updatename', async (req: Request, res: Response) => {
   const { name, id } = req.params;
-
+  console.log(name);
+  console.log(id);
+  
+  
   try {
     // Find the user by ID
     const user: IUser | null = await User.findById(id);
