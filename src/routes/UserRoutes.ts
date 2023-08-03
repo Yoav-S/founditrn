@@ -3,6 +3,8 @@ import User, { IUser } from '../models/UserModel';
 const bcrypt = require('bcrypt');
 import jwt from 'jsonwebtoken';
 const router = express.Router();
+import { ref, uploadBytes, listAll, getDownloadURL, uploadBytesResumable, StorageReference, uploadString } from 'firebase/storage';
+import { storage } from '../config/firebase.config';
 
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -27,6 +29,8 @@ router.post('/signup', async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     
     const hashedPassword = await bcrypt.hash(password, salt);
+    const storageImagesRef = ref(storage, 'images/defaultimagefolder/3135715.png');
+    const downloadUrl = await getDownloadURL(storageImagesRef);
 
     const user: IUser = new User({
       name,
@@ -34,7 +38,7 @@ router.post('/signup', async (req: Request, res: Response) => {
       password: hashedPassword,
       phone,
       items: [],
-      img: null
+      img: downloadUrl
     });
 
     const savedUser = await user.save();
