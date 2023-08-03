@@ -68,19 +68,22 @@ router.patch('/updatename/:name/:id', async (req: Request, res: Response) => {
 });
 
 
-router.patch('/updatepassword/:password/:id', async (req: Request, res: Response) => {
+router.patch('/updatepassword/:password/:id', async (req, res) => {
   const { password, id } = req.params;
 
   try {
     // Find the user by ID
-    const user: IUser | null = await User.findById(id);
+    const user = await User.findById(id);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Update the user's name
-    user.password = password as string;
+    // Hash the new password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the user's password with the hashed password
+    user.password = hashedPassword;
     await user.save();
 
     return res.status(200).json({ message: 'Password updated successfully' });
