@@ -46,7 +46,7 @@ router.post('/signup', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/updatename', async (req: Request, res: Response) => {
+router.patch('/updatename:name:id', async (req: Request, res: Response) => {
   const { name, id } = req.query;
   console.log(name);
   console.log(id);
