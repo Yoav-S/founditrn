@@ -2,8 +2,6 @@ import express, { Request, Response } from 'express';
 import User, { IUser } from '../models/UserModel';
 const bcrypt = require('bcrypt');
 import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-import Item, { IItem } from './../models/ItemModel';
 const router = express.Router();
 
 router.get('/', async (req: Request, res: Response) => {
@@ -45,6 +43,71 @@ router.post('/signup', async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.patch('/updatename', async (req: Request, res: Response) => {
+  const { name, id } = req.params;
+
+  try {
+    // Find the user by ID
+    const user: IUser | null = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's name
+    user.name = name;
+    await user.save();
+
+    return res.status(200).json({ message: 'Name updated successfully' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+
+router.patch('/updatepassword', async (req: Request, res: Response) => {
+  const { password, id } = req.params;
+
+  try {
+    // Find the user by ID
+    const user: IUser | null = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's name
+    user.password = password;
+    await user.save();
+
+    return res.status(200).json({ message: 'Password updated successfully' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+
+router.patch('/updatephone', async (req: Request, res: Response) => {
+  const { phone, id } = req.params;
+
+  try {
+    // Find the user by ID
+    const user: IUser | null = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Update the user's name
+    user.phone = phone;
+    await user.save();
+
+    return res.status(200).json({ message: 'Phone number updated successfully' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Something went wrong' });
   }
 });
 
