@@ -48,10 +48,7 @@ router.post('/signup', async (req: Request, res: Response) => {
 
 router.patch('/updatename/:name/:id', async (req: Request, res: Response) => {
   const { name, id } = req.params;
-  console.log(name);
-  console.log(id);
-  
-  
+
   try {
     // Find the user by ID
     const user: IUser | null = await User.findById(id);
@@ -71,7 +68,7 @@ router.patch('/updatename/:name/:id', async (req: Request, res: Response) => {
 });
 
 
-router.patch('/updatepassword', async (req: Request, res: Response) => {
+router.patch('/updatepassword/:password/:id', async (req: Request, res: Response) => {
   const { password, id } = req.params;
 
   try {
@@ -83,7 +80,7 @@ router.patch('/updatepassword', async (req: Request, res: Response) => {
     }
 
     // Update the user's name
-    user.password = password;
+    user.password = password as string;
     await user.save();
 
     return res.status(200).json({ message: 'Password updated successfully' });
@@ -93,7 +90,7 @@ router.patch('/updatepassword', async (req: Request, res: Response) => {
 });
 
 
-router.patch('/updatephone', async (req: Request, res: Response) => {
+router.patch('/updatephone/:phone/:id', async (req: Request, res: Response) => {
   const { phone, id } = req.params;
 
   try {
@@ -105,7 +102,7 @@ router.patch('/updatephone', async (req: Request, res: Response) => {
     }
 
     // Update the user's name
-    user.phone = phone;
+    user.phone = phone as string;
     await user.save();
 
     return res.status(200).json({ message: 'Phone number updated successfully' });
