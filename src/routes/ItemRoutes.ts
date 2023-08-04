@@ -31,6 +31,38 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+router.patch('/updateimage', async (req : Request, res : Response) => {
+  const image: Express.Multer.File = req.file as Express.Multer.File;
+  const { id } = req.body;
+  try{
+
+  
+  const imageBuffer = await readFile(image.path);
+  const uint8Array = new Uint8Array(imageBuffer);
+  const imageRef = ref(storage, image.originalname);
+  const storageImagesRef = ref(storage, `images/${id}/${image.originalname}`);
+  imageRef.name === storageImagesRef.name;
+  imageRef.fullPath === storageImagesRef.fullPath;
+  await uploadBytes(storageImagesRef, uint8Array).then((response) => {
+    console.log('response', response);
+  })
+  const downloadUrl = await getDownloadURL(storageImagesRef);
+  console.log('File successfully uploaded');
+  const user = await User.findById(id);
+  if(!user) {
+    res.status(404).send({ message: 'User not found' });
+  }
+  else{
+    user.img = downloadUrl;
+    await user.save();
+    res.status(200).send({message: 'Image successfully uploaded'})
+  }
+} catch (err : any) {
+  res.status(404).send(err.message);
+}
+
+
+})
 
 router.get('/getitemsbyid/:ownerId', async (req: Request, res: Response) => {
   try {
@@ -68,7 +100,7 @@ router.post('/insertItem', async (req: Request, res: Response) => {
         const uint8Array = new Uint8Array(imageBuffer);
   
         const imageRef = ref(storage, image.originalname);
-        const storageImagesRef = ref(storage, `images/${image.originalname}`);
+        const storageImagesRef = ref(storage, `images/itemsimages/${image.originalname}`);
         imageRef.name === storageImagesRef.name
         imageRef.fullPath === storageImagesRef.fullPath
         await uploadBytes(storageImagesRef, uint8Array).then((response) => {
