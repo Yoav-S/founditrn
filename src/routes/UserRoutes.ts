@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 import { ref, uploadBytes, listAll, getDownloadURL, uploadBytesResumable, StorageReference, uploadString } from 'firebase/storage';
 import { storage } from '../config/firebase.config';
+import { promises as fsPromises } from 'fs'; // Import the 'fs' module for file operations
+const { readFile } = fsPromises;
 
 router.get('/', async (req: Request, res: Response) => {
   try {
@@ -96,6 +98,38 @@ router.patch('/updatepassword/:password/:id', async (req, res) => {
   }
 });
 
+router.patch('/updateimage', async (req : Request, res : Response) => {
+  const image: Express.Multer.File = req.file as Express.Multer.File;
+  const { id } = req.body;
+  try{
+
+  
+  const imageBuffer = await readFile(image.path);
+  const uint8Array = new Uint8Array(imageBuffer);
+  const imageRef = ref(storage, image.originalname);
+  const storageImagesRef = ref(storage, `images/${id}/${image.originalname}`);
+  imageRef.name === storageImagesRef.name;
+  imageRef.fullPath === storageImagesRef.fullPath;
+  await uploadBytes(storageImagesRef, uint8Array).then((response) => {
+    console.log('response', response);
+  })
+  const downloadUrl = await getDownloadURL(storageImagesRef);
+  console.log('File successfully uploaded');
+  const user = await User.findById(id);
+  if(!user) {
+    res.status(404).send({ message: 'User not found' });
+  }
+  else{
+    user.img = downloadUrl;
+    await user.save();
+    res.status(200).send({message: 'Image successfully uploaded'})
+  }
+} catch (err : any) {
+  res.status(404).send(err.message);
+}
+
+
+})
 
 router.patch('/updatephone/:phone/:id', async (req: Request, res: Response) => {
   const { phone, id } = req.params;

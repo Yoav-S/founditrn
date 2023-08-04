@@ -20,7 +20,7 @@ const upload = multer({ dest: 'uploads/', limits: { fileSize: 10 * 1024 * 1024 }
 
 // Mount your routes after setting up multer
 server.use('/items', upload.array('images'), ItemRoutes);
-server.use('/users', UserRoutes);
+server.use('/users', upload.single('image'), UserRoutes);
 
 // Start the server
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
