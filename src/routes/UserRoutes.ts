@@ -100,6 +100,8 @@ router.patch('/updatepassword/:password/:id', async (req, res) => {
 
 router.patch('/updateimage', async (req : Request, res : Response) => {
   const image: Express.Multer.File = req.file as Express.Multer.File;
+  console.log('Request file size:', image.size); // Log the size of the uploaded file
+
   const { id } = req.body;
   try{
 
