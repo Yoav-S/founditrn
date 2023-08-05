@@ -154,7 +154,24 @@ router.patch('/updatephone/:phone/:id', async (req: Request, res: Response) => {
   }
 });
 
-
+router.delete('/deleteimage/:id', async (req : Request, res : Response) => {
+  const {id} = req.params;
+  try{
+    const existingUser = await User.findOne({ id : id });
+    if(!existingUser){
+      res.status(404).send({message: 'User not found'})
+    }
+    else{
+      const storageImagesRef = ref(storage, 'images/defaultimagefolder/3135715.png');
+      const downloadUrl : string = await getDownloadURL(storageImagesRef);
+      existingUser.img = downloadUrl;
+      existingUser.save();
+      res.status(200).send({message: 'Image succesfully deleted', downloadUrl: downloadUrl});
+    }
+  } catch(err : any){
+    res.status(500).send({message: err.message});
+  }
+})
 
 router.get('/getuserbyownerid/:ownerid', async (req: Request, res: Response) => {
   const { ownerid } = req.params;
