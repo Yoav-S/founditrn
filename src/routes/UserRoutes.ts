@@ -174,6 +174,12 @@ router.get('/getuserbyownerid/:ownerid', async (req: Request, res: Response) => 
   }
 });
 
+
+router.post('/logout', async (req : Request, res : Response) => {
+
+})
+
+
 router.post('/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -205,7 +211,6 @@ router.post('/login', async (req: Request, res: Response) => {
     const secretKey = 'founditrntoken'; // Replace this with your actual secret key
     const token = jwt.sign(payload, secretKey, { expiresIn: '1h' }); // Token expires in 1 hour
     console.log(token);
-    
     // Send the token in the response
     res.status(200).json({ token });
   } catch (error) {
