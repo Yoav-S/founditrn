@@ -124,7 +124,7 @@ router.patch('/updateimage', async (req : Request, res : Response) => {
   else{
     user.img = downloadUrl;
     await user.save();
-    res.status(200).send({message: 'Image successfully uploaded'})
+    res.status(200).send({message: 'Image successfully uploaded', downloadedUrl: downloadUrl});
   }
 } catch (err : any) {
   res.status(404).send(err.message);
