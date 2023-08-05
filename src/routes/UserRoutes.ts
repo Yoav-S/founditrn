@@ -157,7 +157,7 @@ router.patch('/updatephone/:phone/:id', async (req: Request, res: Response) => {
 router.delete('/deleteimage/:id', async (req : Request, res : Response) => {
   const {id} = req.params;
   try{
-    const existingUser = await User.findOne({ id : id });
+    const existingUser = await User.findOne({ _id : id });
     if(!existingUser){
       res.status(404).send({message: 'User not found'})
     }
